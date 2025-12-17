@@ -16,6 +16,13 @@ def list_files(path: str) -> list[str]:
     Returns:
         list[str]: A list of file paths found in the directory and its subdirectories.
     """
+
+    files = []
+    for root, _, filenames in os.walk(path):
+        for name in filenames:
+            files.append(os.path.join(root, name))
+    return files
+
     # Run "pytest find_duplicates.py -k list_files" to test your implementation
     raise NotImplementedError()
 
@@ -30,6 +37,12 @@ def get_file_size(file_path: str) -> int:
     Returns:
         int or None: The file size in bytes, or None if the file cannot be accessed.
     """
+
+    try:
+        return os.path.getsize(file_path)
+    except OSError:
+        return None
+
     # Run "pytest find_duplicates.py -k get_file_size" to test your implementation
     raise NotImplementedError()
 
@@ -44,6 +57,12 @@ def hash_first_1k_bytes(file_path: str) -> str:
     Returns:
         str: The hexadecimal SHA-1 hash of the first 1024 bytes of the file.
     """
+
+    sha1 = hashlib.sha1()
+    with open(file_path, "rb") as f:
+        sha1.update(f.read(1024))
+    return sha1.hexdigest()
+
     # Run "pytest find_duplicates.py -k hash_first_1k_bytes" to test your implementation
     raise NotImplementedError()
 
@@ -58,6 +77,13 @@ def hash_file(file_path: str) -> str:
     Returns:
         str: The hexadecimal SHA-1 hash of the file.
     """
+
+    sha1 = hashlib.sha1()
+    with open(file_path, "rb") as f:
+        for chunk in iter(lambda: f.read(8192), b""):
+            sha1.update(chunk)
+    return sha1.hexdigest()
+
     # Run "pytest find_duplicates.py -k hash_file" to test your implementation
     raise NotImplementedError()
 
@@ -150,6 +176,17 @@ def file_size_string(num_bytes: int) -> str:
     Returns:
         None
     """
+
+    sizes = ["B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"]
+    size = float(num_bytes)
+    idx = 0
+
+    while size >= 1000 and idx < len(sizes) - 1:
+        size /= 1000
+        idx += 1
+
+    return f"{size:.2f}{sizes[idx]}"
+
     sizes = ["B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"]
     # Run "pytest find_duplicates.py -k file_size_string" to test your implementation
     raise NotImplementedError()
